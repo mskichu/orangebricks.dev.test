@@ -27,6 +27,22 @@ namespace OrangeBricks.Web.Migrations
             //      new Person { FullName = "Rowan Miller" }
             //    );
             //
+
+            // Seed View Status
+            // avoid duplicatie
+            if(context.ViewStatus.Count()<1)
+            {
+
+                context.ViewStatus.AddOrUpdate(k => k.StatusId,
+                new Models.ViewStatus { StatusName = "Available" }
+                , new Models.ViewStatus { StatusName = "Pending" }
+                , new Models.ViewStatus { StatusName = "Accepted" }
+                );
+
+            }
+
+
+
         }
     }
 }

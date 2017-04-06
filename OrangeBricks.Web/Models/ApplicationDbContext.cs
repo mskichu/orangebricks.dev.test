@@ -1,3 +1,4 @@
+using System;
 using System.Data.Entity;
 using System.Data.Entity.Infrastructure;
 using Microsoft.AspNet.Identity.EntityFramework;
@@ -19,10 +20,16 @@ namespace OrangeBricks.Web.Models
         public IDbSet<Property> Properties { get; set; }
         public IDbSet<Offer> Offers { get; set; }
 
+        public IDbSet<Viewing> Viewing { get; set; }
+        public IDbSet<ViewStatus> ViewStatus { get; set; }
+
+
+
         public new void SaveChanges()
         {
             base.SaveChanges();
         }
+
     }
 
     public interface IOrangeBricksContext
@@ -30,6 +37,12 @@ namespace OrangeBricks.Web.Models
         IDbSet<Property> Properties { get; set; }
         IDbSet<Offer> Offers { get; set; }
 
+        IDbSet<Viewing> Viewing { get; set; }
+        IDbSet<ViewStatus> ViewStatus { get; set; }
+      
+
+
         void SaveChanges();
+     
     }
 }

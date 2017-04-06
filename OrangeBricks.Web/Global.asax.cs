@@ -14,6 +14,8 @@ using OrangeBricks.Web.Models;
 using SimpleInjector;
 using SimpleInjector.Diagnostics;
 using SimpleInjector.Integration.Web.Mvc;
+using OrangeBricks.Web.Infrastructure;
+using OrangeBricks.Web.Controllers.GenericBuilder;
 
 namespace OrangeBricks.Web
 {
@@ -38,6 +40,20 @@ namespace OrangeBricks.Web
             // MVC
             container.RegisterMvcControllers(Assembly.GetExecutingAssembly());
             container.RegisterMvcIntegratedFilterProvider();
+
+            //Register all viewmodel builders
+            var typeviewmodel = typeof(IViewModel);
+            var types = AppDomain.CurrentDomain.GetAssemblies()
+                .SelectMany(s => s.GetTypes())
+                .Where(p => typeviewmodel.IsAssignableFrom(p));
+
+            foreach (var reg in types)
+            {
+                container.Register(reg);
+            }
+            // register Iviewmodel factoru
+            container.Register<IViewModelFactory, GenericViewModelFactory>();
+
 
             DependencyResolver.SetResolver(
                 new SimpleInjectorDependencyResolver(container));

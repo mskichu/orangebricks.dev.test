@@ -20,6 +20,7 @@
     <IISExpressAnonymousAuthentication />
     <IISExpressWindowsAuthentication />
     <IISExpressUseClassicPipelineMode />
+    <UseGlobalApplicationHostFile />
   </PropertyGroup>
   <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Debug|AnyCPU' ">
     <DebugSymbols>true</DebugSymbols>
@@ -39,6 +40,10 @@
     <WarningLevel>4</WarningLevel>
   </PropertyGroup>
   <ItemGroup>
+    <Reference Include="AutoMapper, Version=6.0.2.0, Culture=neutral, PublicKeyToken=be96cd2c38ef1005, processorArchitecture=MSIL">
+      <HintPath>..\packages\AutoMapper.6.0.2\lib\net45\AutoMapper.dll</HintPath>
+      <Private>True</Private>
+    </Reference>
     <Reference Include="EntityFramework, Version=6.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089, processorArchitecture=MSIL">
       <SpecificVersion>False</SpecificVersion>
       <HintPath>..\packages\EntityFramework.6.1.3\lib\net45\EntityFramework.dll</HintPath>
@@ -164,6 +169,7 @@
     </Reference>
   </ItemGroup>
   <ItemGroup>
+    <Compile Include="App_Start\AutoMapperConfig.cs" />
     <Compile Include="App_Start\BundleConfig.cs" />
     <Compile Include="App_Start\FilterConfig.cs" />
     <Compile Include="App_Start\IdentityConfig.cs" />
@@ -171,6 +177,7 @@
     <Compile Include="App_Start\Startup.Auth.cs" />
     <Compile Include="Attributes\OrangeBricksAuthorizeAttribute.cs" />
     <Compile Include="Controllers\AccountController.cs" />
+    <Compile Include="Controllers\GenericBuilder\GenericViewBuilder.cs" />
     <Compile Include="Controllers\HomeController.cs" />
     <Compile Include="Controllers\Offers\Builders\OffersOnPropertyViewModelBuilder.cs" />
     <Compile Include="Controllers\Offers\Commands\AcceptOfferCommand.cs" />
@@ -195,10 +202,26 @@
     <Compile Include="Controllers\Property\ViewModels\MyPropertiesViewModel.cs" />
     <Compile Include="Controllers\Property\ViewModels\PropertiesViewModel.cs" />
     <Compile Include="Controllers\Property\ViewModels\PropertyViewModel.cs" />
+    <Compile Include="Controllers\Viewing\Builders\RequestViewModelBuilder.cs" />
+    <Compile Include="Controllers\Viewing\Commands\AcceptViewingCommand.cs" />
+    <Compile Include="Controllers\Viewing\Commands\AcceptViewingCommandHandler.cs" />
+    <Compile Include="Controllers\Viewing\Commands\CreateViewingCommand.cs" />
+    <Compile Include="Controllers\Viewing\Commands\ListViewingCommand.cs" />
+    <Compile Include="Controllers\Viewing\Commands\ViewingCommand.cs" />
+    <Compile Include="Controllers\Viewing\ViewingController.cs" />
+    <Compile Include="Controllers\Viewing\Commands\CreateViewingCommandHandler.cs" />
+    <Compile Include="Controllers\Viewing\Commands\ListViewingCommandHandler.cs" />
+    <Compile Include="Controllers\Viewing\ViewModels\BookViewingPropertyModel.cs" />
+    <Compile Include="Controllers\Viewing\ViewModels\ViewPropertiesViewModel.cs" />
+    <Compile Include="Controllers\Viewing\ViewModels\ViewPropertyStatus.cs" />
     <Compile Include="Global.asax.cs">
       <DependentUpon>Global.asax</DependentUpon>
     </Compile>
     <Compile Include="Infrastructure\IdentityManager.cs" />
+    <Compile Include="Infrastructure\IMapCustom.cs" />
+    <Compile Include="Infrastructure\IMapFrom.cs" />
+    <Compile Include="Infrastructure\IMapReverseFrom.cs" />
+    <Compile Include="Infrastructure\IViewModel.cs" />
     <Compile Include="Migrations\201505052030221_InitialCreate.cs" />
     <Compile Include="Migrations\201505052030221_InitialCreate.Designer.cs">
       <DependentUpon>201505052030221_InitialCreate.cs</DependentUpon>
@@ -227,9 +250,23 @@
     <Compile Include="Migrations\201505101607236_AddFieldsToOffers.Designer.cs">
       <DependentUpon>201505101607236_AddFieldsToOffers.cs</DependentUpon>
     </Compile>
+    <Compile Include="Migrations\201704061055014_AddingViewingTable.cs" />
+    <Compile Include="Migrations\201704061055014_AddingViewingTable.Designer.cs">
+      <DependentUpon>201704061055014_AddingViewingTable.cs</DependentUpon>
+    </Compile>
+    <Compile Include="Migrations\201704061058293_AddingSeedingForViewStatus.cs" />
+    <Compile Include="Migrations\201704061058293_AddingSeedingForViewStatus.Designer.cs">
+      <DependentUpon>201704061058293_AddingSeedingForViewStatus.cs</DependentUpon>
+    </Compile>
+    <Compile Include="Migrations\201704061102085_AddingViewStatusForiegnKeyRelations.cs" />
+    <Compile Include="Migrations\201704061102085_AddingViewStatusForiegnKeyRelations.Designer.cs">
+      <DependentUpon>201704061102085_AddingViewStatusForiegnKeyRelations.cs</DependentUpon>
+    </Compile>
     <Compile Include="Migrations\Configuration.cs" />
     <Compile Include="Models\AccountViewModels.cs" />
     <Compile Include="Models\ApplicationDbContext.cs" />
+    <Compile Include="Models\ViewStatus.cs" />
+    <Compile Include="Models\Viewing.cs" />
     <Compile Include="Models\OfferStatus.cs" />
     <Compile Include="Models\IdentityModels.cs" />
     <Compile Include="Models\ManageViewModels.cs" />
@@ -259,7 +296,9 @@
     <Content Include="Scripts\respond.js" />
     <Content Include="Scripts\respond.min.js" />
     <Content Include="Scripts\_references.js" />
-    <Content Include="Web.config" />
+    <Content Include="Web.config">
+      <SubType>Designer</SubType>
+    </Content>
     <Content Include="Web.Debug.config">
       <DependentUpon>Web.config</DependentUpon>
     </Content>
@@ -294,6 +333,7 @@
   </ItemGroup>
   <ItemGroup>
     <Folder Include="App_Data\" />
+    <Folder Include="Views\Viewing\" />
   </ItemGroup>
   <ItemGroup>
     <Content Include="fonts\glyphicons-halflings-regular.woff" />
@@ -322,6 +362,15 @@
     </EmbeddedResource>
     <EmbeddedResource Include="Migrations\201505101607236_AddFieldsToOffers.resx">
       <DependentUpon>201505101607236_AddFieldsToOffers.cs</DependentUpon>
+    </EmbeddedResource>
+    <EmbeddedResource Include="Migrations\201704061055014_AddingViewingTable.resx">
+      <DependentUpon>201704061055014_AddingViewingTable.cs</DependentUpon>
+    </EmbeddedResource>
+    <EmbeddedResource Include="Migrations\201704061058293_AddingSeedingForViewStatus.resx">
+      <DependentUpon>201704061058293_AddingSeedingForViewStatus.cs</DependentUpon>
+    </EmbeddedResource>
+    <EmbeddedResource Include="Migrations\201704061102085_AddingViewStatusForiegnKeyRelations.resx">
+      <DependentUpon>201704061102085_AddingViewStatusForiegnKeyRelations.cs</DependentUpon>
     </EmbeddedResource>
   </ItemGroup>
   <PropertyGroup>
