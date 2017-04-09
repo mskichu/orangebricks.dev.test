@@ -1,0 +1,28 @@
+﻿@model OrangeBricks.Web.Controllers.Viewing.ViewModels.ViewPropertiesViewModel
+
+@{
+    ViewBag.Title = "Viewing List";
+    Layout = "~/Views/Shared/_Layout.cshtml";
+}
+
+<h2>Viewing for Property: @Model.PropertyTitle </h2>
+
+<table class="table">
+    <tr>
+        <th></th>
+    </tr>
+
+    @foreach (var item in Model.ViewProperties)
+    {
+        <tr>
+            <td>@item.BuyersName</td>
+            <td>@item.ViewingDateTime</td>
+            <td>@item.ViewStatus</td>
+            <td>
+                @Html.ActionLink("Edit", "EditView", new { PropertyId = @item.PropertyId,  BuyerId=@item.BuyerId, ViewingId =@item.ViewingId} ) |
+                
+            </td>
+        </tr>
+    }
+
+</table>
