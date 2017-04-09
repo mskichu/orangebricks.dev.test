@@ -1,14 +1,33 @@
-﻿using System.Web;
+﻿using System.Collections.Generic;
+using System.Web;
 using System.Web.Optimization;
 
 namespace OrangeBricks.Web
 {
+
+
+    public class BundleOrderer : IBundleOrderer
+    {
+        public IEnumerable<BundleFile> OrderFiles(BundleContext context, IEnumerable<BundleFile> files)
+        {
+            return files;
+        }
+    }
+
+    static class BundleExtentions
+    {
+        public static Bundle KeepOrdering(this Bundle bundle)
+        {
+            bundle.Orderer = new BundleOrderer();
+            return bundle;
+        }
+    }
     public class BundleConfig
     {
         // For more information on bundling, visit http://go.microsoft.com/fwlink/?LinkId=301862
         public static void RegisterBundles(BundleCollection bundles)
         {
-            bundles.Add(new ScriptBundle("~/bundles/jquery").Include(
+            bundles.Add(new ScriptBundle("~/bundles/jquery").KeepOrdering().Include(
                         "~/Scripts/jquery-{version}.js"));
 
             bundles.Add(new ScriptBundle("~/bundles/jqueryval").Include(
@@ -19,13 +38,20 @@ namespace OrangeBricks.Web
             bundles.Add(new ScriptBundle("~/bundles/modernizr").Include(
                         "~/Scripts/modernizr-*"));
 
-            bundles.Add(new ScriptBundle("~/bundles/bootstrap").Include(
-                      "~/Scripts/bootstrap.js",
-                      "~/Scripts/respond.js"));
+            bundles.Add(new ScriptBundle("~/bundles/bootstrap").KeepOrdering().Include(
+                      "~/Scripts/bootstrap.js"
+                      ,"~/Scripts/moment-with-locales.js"                      
+                      ,"~/Scripts/bootstrap-datetimepicker.js"
+                     , "~/Scripts/respond.js"));
+
+            bundles.Add(new ScriptBundle("~/bundles/assert").KeepOrdering().Include(
+                     "~/Scripts/assert/app.js"
+                     ,"~/Scripts/assert/viewing/viewing.js"));
 
             bundles.Add(new StyleBundle("~/Content/css").Include(
-                      "~/Content/bootstrap.css",
-                      "~/Content/site.css"));
+                      "~/Content/bootstrap.css"
+                      ,"~/Content/bootstrap-datetimepicker.css"
+                      ,"~/Content/site.css"));
 
             // Set EnableOptimizations to false for debugging. For more information,
             // visit http://go.microsoft.com/fwlink/?LinkId=301862

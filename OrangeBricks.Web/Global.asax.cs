@@ -16,6 +16,13 @@ using SimpleInjector.Diagnostics;
 using SimpleInjector.Integration.Web.Mvc;
 using OrangeBricks.Web.Infrastructure;
 using OrangeBricks.Web.Controllers.GenericBuilder;
+using OrangeBricks.Web.UoW;
+using OrangeBricks.Web.Controllers.Property;
+using OrangeBricks.Web.Controllers.Viewing.ViewModels;
+using OrangeBricks.Web.Controllers.Viewing.Builders;
+using SimpleInjector.Extensions;
+using OrangeBricks.Web.App_Start;
+using OrangeBricks.Web.Controllers.GenericHandler;
 
 namespace OrangeBricks.Web
 {
@@ -51,12 +58,29 @@ namespace OrangeBricks.Web
             {
                 container.Register(reg);
             }
-            // register Iviewmodel factoru
-            container.Register<IViewModelFactory, GenericViewModelFactory>();
+            // register Iviewmodel factory
+            container.Register<IViewModelFactory, GenericViewModelFactory>();        
+            // register all our builders and Generic types
+            container.RegisterManyForOpenGeneric(typeof(IViewModelBuilderInput<,,>),typeof(IViewModelBuilderInput<,,>).Assembly);
+            container.RegisterManyForOpenGeneric(typeof(IViewModelBuilder<,>), typeof(IViewModelBuilder<,>).Assembly);
 
+            container.Register<IGenericHandlerFactory, GenericHandlerBuilderFactory>();
+            container.RegisterManyForOpenGeneric(typeof(IHandler<,>), typeof(IHandler<,>).Assembly);
+
+            // register Unit ofWork
+            container.Register<IUnitOfWork, OrangeBrickEfUnitOfWork>();
 
             DependencyResolver.SetResolver(
                 new SimpleInjectorDependencyResolver(container));
+            ConfigureAutoMapper();
+        }
+
+
+        private void ConfigureAutoMapper()
+        {
+            var types = Assembly.GetExecutingAssembly().GetExportedTypes().ToList();
+           
+            AutomapperConfig.Configure(types);
         }
     }
 }

@@ -38,9 +38,7 @@ namespace OrangeBricks.Web.Models
         IDbSet<Offer> Offers { get; set; }
 
         IDbSet<Viewing> Viewing { get; set; }
-        IDbSet<ViewStatus> ViewStatus { get; set; }
-      
-
+        IDbSet<ViewStatus> ViewStatus { get; set; } 
 
         void SaveChanges();
      

@@ -17,7 +17,8 @@
     <p>@property.Description</p>
 
     <a href="@Url.Action("OnProperty", "Offers", new {id = property.Id})">View offers that have been made on this property...</a>
-        
+    <a href="@Url.Action("AllMyViewing", "Viewing", new { PropertyId = property.Id, PropertyTitle = @property.StreetName})">List Viewings that have been booked on this property...</a>
+
     if (!property.IsListedForSale)
     {
         using (Html.BeginForm("ListForSale", "Property"))

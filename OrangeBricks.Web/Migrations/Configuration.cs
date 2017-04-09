@@ -34,7 +34,7 @@ namespace OrangeBricks.Web.Migrations
             {
 
                 context.ViewStatus.AddOrUpdate(k => k.StatusId,
-                new Models.ViewStatus { StatusName = "Available" }
+                new Models.ViewStatus { StatusName = "NotAvailable" }
                 , new Models.ViewStatus { StatusName = "Pending" }
                 , new Models.ViewStatus { StatusName = "Accepted" }
                 );

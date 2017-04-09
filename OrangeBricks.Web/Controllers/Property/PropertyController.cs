@@ -7,16 +7,29 @@ using OrangeBricks.Web.Controllers.Property.Builders;
 using OrangeBricks.Web.Controllers.Property.Commands;
 using OrangeBricks.Web.Controllers.Property.ViewModels;
 using OrangeBricks.Web.Models;
+using OrangeBricks.Web.Controllers.GenericBuilder;
+using OrangeBricks.Web.Controllers.Viewing.Commands;
+using OrangeBricks.Web.Controllers.Viewing.ViewModels;
+using OrangeBricks.Web.UoW;
+using OrangeBricks.Web.Controllers.Viewing.Builders;
 
 namespace OrangeBricks.Web.Controllers.Property
 {
+    [Authorize]
     public class PropertyController : Controller
     {
         private readonly IOrangeBricksContext _context;
+        private readonly IViewModelFactory _viewFactory;
+        private readonly IUnitOfWork _uow;
+        
 
-        public PropertyController(IOrangeBricksContext context)
+        
+
+        public PropertyController(IOrangeBricksContext context, IViewModelFactory viewFactory, IUnitOfWork uow)
         {
+            _viewFactory = viewFactory;
             _context = context;
+            _uow = uow;
         }
 
         [Authorize]
@@ -91,5 +104,25 @@ namespace OrangeBricks.Web.Controllers.Property
 
             return RedirectToAction("Index");
         }
+
+        [OrangeBricksAuthorize(Roles = "Buyer")]
+        public ActionResult BookViewing(BookViewingBuilderParam param)
+        {
+            param.BuyerId = this.HttpContext.User.Identity.GetUserId();
+            return View(_viewFactory.GetViewModel<PropertyController, BookViewingPropertyViewModel, BookViewingBuilderParam>(this, param));
+        }
+
+
+        [HttpPost]
+        [OrangeBricksAuthorize(Roles = "Buyer")]
+        public ActionResult BookViewing(BookViewingCommand command)
+        {
+            command.BuyerId= this.HttpContext.User.Identity.GetUserId();
+            var handler = new BookViewingCommandHandler(_uow);
+            handler.Handle(command);
+            return RedirectToAction("Index");
+        }
+
+
     }
 }

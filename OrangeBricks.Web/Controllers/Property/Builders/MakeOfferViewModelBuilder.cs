@@ -15,7 +15,6 @@ namespace OrangeBricks.Web.Controllers.Property.Builders
         public MakeOfferViewModel Build(int id)
         {
             var property = _context.Properties.Find(id);
-
             return new MakeOfferViewModel
             {
                 PropertyId = property.Id,
